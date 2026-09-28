@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<title>মাদ্রাসা রেজাল্ট প্রো</title>
+<style>
+:root{--primary:#0f766e;--dark:#12332f;--light:#eef7f5;--border:#b9c7c4}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Bengali","SolaimanLipi","Kalpurush",Arial,sans-serif;background:#f3f6f6;color:#172321}
+header{background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px #0002}
+header h1{margin:0;font-size:23px;max-width:calc(100% - 330px)}header p{margin:5px 0 0;opacity:.9;font-size:13px;max-width:calc(100% - 320px)}header a{color:inherit}
+.date-widget{position:absolute;right:20px;top:14px;width:300px;text-align:right;font-size:12px;line-height:1.45}
+.date-widget .date-line{white-space:nowrap}
+.date-widget .date-time{font-weight:800;font-size:14px;margin-bottom:3px}\n.date-widget .date-line{font-size:12px;font-weight:600;margin-top:2px}
+.calendar-toggle{border:1px solid #ffffff70;border-radius:7px;background:#ffffff1c;color:#fff;padding:5px 10px;margin-top:5px;cursor:pointer;font:inherit;font-weight:700}
+.calendar-panel{position:absolute;top:100%;right:0;margin-top:8px;width:min(360px,calc(100vw - 28px));padding:12px;background:#fff;color:#172321;border:1px solid #cbd5d3;border-radius:10px;box-shadow:0 8px 24px #0003;text-align:left;z-index:30}
+.calendar-panel[hidden]{display:none}.calendar-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.calendar-top button,.calendar-languages button{border:0;border-radius:6px;padding:6px 9px;background:#e5efed;color:#145c55;cursor:pointer;font:inherit;font-weight:700}
+.calendar-title{font-weight:800;text-align:center;flex:1}.calendar-languages{display:flex;gap:6px;margin:10px 0}
+.calendar-languages button.active{background:#0f766e;color:#fff}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.calendar-grid span{padding:6px 1px;font-size:12px}.calendar-grid .weekday{font-weight:800;color:#46615d}.calendar-grid .today{background:#0f766e;color:#fff;border-radius:50%;font-weight:800}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.school-name-ticker{height:30px;margin-top:10px;position:relative;overflow:hidden;border-top:1px solid #ffffff55;border-bottom:1px solid #ffffff55;white-space:nowrap}
+.school-name-ticker span{position:absolute;left:100%;top:3px;width:max-content;max-width:none;font-size:15px;font-weight:800;line-height:22px;animation:schoolNameTravel 22s linear infinite}
+@keyframes schoolNameTravel{from{left:100%;transform:translateX(0)}to{left:0;transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.school-name-ticker span{animation:none!important;left:0!important;transform:none!important;position:relative;display:block;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis}}
+nav button,.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
+nav button{background:#ffffff20;color:#fff}nav button.active,nav button:hover{background:#fff;color:#0f766e}
+main{max-width:1300px;margin:20px auto;padding:0 14px}.tab{display:none}.tab.active{display:block}
+.card{background:#fff;border:1px solid #dce5e3;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #0000000b}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:5px}
+input,select{width:100%;padding:10px;border:1px solid #cbd5d3;border-radius:7px;font:inherit;background:#fff}
+.btn.primary{background:var(--primary);color:#fff}.btn.secondary{background:#e5efed;color:#145c55}.btn.danger{background:#fee2e2;color:#991b1b}.btn.dark{background:#20302d;color:#fff}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{border:1px solid #9daaa8;padding:7px 6px;text-align:center;font-size:13px}th{background:#e9eeee;font-weight:800}
+.table-wrap{overflow:auto}.muted{color:#66736f;font-size:13px}.stat{font-size:27px;font-weight:800;color:var(--primary)}
+.toast{position:fixed;right:16px;bottom:16px;background:#173b35;color:#fff;padding:12px 16px;border-radius:8px;display:none;z-index:50}
+.logo-preview{width:72px;height:72px;object-fit:contain;border:1px dashed #aaa;border-radius:8px;background:#fafafa}
+.result-sheet{background:#fff;border:1px solid #aaa;padding:18px;margin:15px auto;max-width:1200px}
+.sheet-head{text-align:center}.sheet-head h2{margin:2px 0;font-size:25px}.sheet-head h3{margin:2px 0;font-size:17px}.sheet-meta{display:flex;justify-content:center;gap:35px;margin:6px 0 12px;font-size:14px}
+.sheet-table th,.sheet-table td{font-size:11px;padding:4px 3px}.sheet-table th{white-space:nowrap}
+.small{font-size:11px}.right{text-align:right}
+.notice{background:#fff8db;border:1px solid #f0d978;padding:10px;border-radius:8px;font-size:13px}
+.marksheet{background:#fff;border:1px solid #aaa;padding:20px;margin:15px auto;max-width:850px;min-height:900px}
+.marksheet-title{text-align:center;border:1px solid #12332f;padding:12px 82px 10px;margin-bottom:0;min-height:100px}
+.marksheet-title h2{margin:3px 0;font-size:25px}.marksheet-title h3{margin:5px 0}
+.marksheet-title .school-en{font:600 14px Arial,sans-serif;letter-spacing:.3px}.marksheet-title .school-ar{font-size:18px;direction:rtl}.marksheet-title .school-address{font-size:12px;margin-top:3px}
+.marksheet-exam{text-align:center;padding:9px;border:1px solid #12332f;border-top:0;font-size:18px;font-weight:800}
+.student-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:15px 0}
+.marksheet-table th,.marksheet-table td{font-size:14px;padding:8px}.failed-mark{background:#f4cccc!important;color:#990000!important;font-weight:800}
+.sheet-table th{background:#0f766e;color:#fff}.sheet-table tbody tr:nth-child(even),.marksheet-table tbody tr:nth-child(even){background:#eef7f5}
+.marksheet-table th{background:#12332f;color:#fff}.result-sheet,.marksheet{position:relative;overflow:hidden}
+.watermarked:after{content:"";position:absolute;inset:0;background-image:url("./mandala-watermark.png");background-repeat:no-repeat;background-position:center;background-size:72% auto;opacity:.14;pointer-events:none;z-index:0}
+.watermarked>*{position:relative;z-index:1}.brand-logo{width:76px;height:76px;object-fit:contain;position:absolute;left:0;top:0}.marksheet-title{position:relative;padding-left:82px;padding-right:82px}
+.marksheet-summary{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}.summary-box{border:1px solid #9daaa8;padding:10px 14px;min-width:130px;text-align:center}
+.signatures{display:flex;justify-content:flex-end;margin:85px 15px 10px}.signatures div{border-top:1px solid #333;padding:6px 18px 0;text-align:center;min-width:190px}
+@media(max-width:900px){.grid,.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:850px){header h1,header p{max-width:none}.date-widget{position:relative;top:auto;right:auto;width:auto;text-align:left;margin-bottom:12px}.calendar-panel{right:auto;left:0}}
+@media(max-width:600px){.grid,.grid3{grid-template-columns:1fr}header h1{font-size:19px}.date-widget .date-line{white-space:normal}}
+@media print{
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{background:#fff}header,main>.tab:not(.active),#resultControls,.no-print{display:none!important}
+ main{margin:0;padding:0;max-width:none}.tab.active{display:block!important}
+ #resultTab .result-sheet{border:0;margin:0;padding:4mm;max-width:none}
+ #marksheetTab .marksheet{border:0;margin:0;padding:6mm 8mm 25mm;max-width:none;min-height:0;height:277mm;overflow:hidden;position:relative}
+ #marksheetTab .marksheet-title{min-height:0;padding:6px 82px}
+ #marksheetTab .marksheet-title h2{font-size:19px}
+ #marksheetTab .marksheet-exam{padding:5px;font-size:15px}
+ #marksheetTab .student-meta{gap:4px 16px;margin:8px 0}
+ #marksheetTab .marksheet-table th,#marksheetTab .marksheet-table td{font-size:11px;padding:4px}
+ #marksheetTab .marksheet-summary{gap:6px;margin:8px 0}
+ #marksheetTab .summary-box{padding:6px 9px;min-width:110px}
+ #marksheetTab .signatures{position:absolute;right:8mm;bottom:7mm;margin:0}
+ .print-all-marksheets #marksheetTab .marksheet{break-after:page;page-break-after:always}
+ .print-all-marksheets #marksheetTab .marksheet:last-child{break-after:auto;page-break-after:auto}
+ @page{size:A4 portrait;margin:10mm}
+ @page resultPage{size:A4 landscape;margin:7mm}
+ .print-result .result-sheet{page:resultPage}
+ .sheet-table th,.sheet-table td{font-size:9px;padding:3px 2px}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="date-widget" aria-label="তারিখ ও ক্যালেন্ডার"><div class="date-time"><span id="liveTime">সময়</span></div><div class="date-line" id="dateBangla">বাংলা বঙ্গাব্দ: তারিখ লোড হচ্ছে…</div><div class="date-line" id="dateArabic" dir="rtl">التاريخ الهجري: …</div><div class="date-line" id="dateEnglish">English: loading…</div><button class="calendar-toggle" type="button" onclick="toggleCalendar()">📅 ক্যালেন্ডার / Calendar</button><div id="calendarPanel" class="calendar-panel" hidden><div class="calendar-top"><button type="button" onclick="moveCalendar(-1)" aria-label="আগের মাস">‹</button><div id="calendarTitle" class="calendar-title"></div><button type="button" onclick="moveCalendar(1)" aria-label="পরের মাস">›</button></div><div class="calendar-languages"><button type="button" data-calendar-lang="bn" onclick="setCalendarLanguage('bn')">বাংলা বঙ্গাব্দ</button><button type="button" data-calendar-lang="en" onclick="setCalendarLanguage('en')">English</button><button type="button" data-calendar-lang="ar" onclick="setCalendarLanguage('ar')">الهجরি</button></div><div id="calendarGrid" class="calendar-grid"></div></div></div>
+<h1>Created by Md. Monirul Islam (Chuadanga)</h1>
+<p>Developer &amp; Graphics Designer<br>মোঃ মনিরুল ইসলাম (ডেভেলপার ও গ্রাফিক্স ডিজাইনার, চুয়াডাঙ্গা)<br>প্রয়োজনে: <a href="https://wa.me/8801308018535" target="_blank" rel="noopener">01308018535 (WhatsApp)</a><br>📚 মাদ্রাসা রেজাল্ট প্রো • ফলাফল তৈরি • মেধা স্থান • A4 Landscape Print • PDF</p>
+<nav>
+<button class="active" onclick="showTab('dashboard',this)">ড্যাশবোর্ড</button>
+<button onclick="showTab('students',this)">শিক্ষার্থী</button>
+<button onclick="showTab('marks',this)">নম্বর</button>
+<button onclick="showTab('resultTab',this)">রেজাল্ট সিট</button>
+<button onclick="showTab('marksheetTab',this)">মার্কশিট</button>
+<button onclick="showTab('settings',this)">সেটিংস</button>
+</nav>
+<div class="school-name-ticker" aria-label="মাদ্রাসার নাম"><span id="schoolTickerName">মাদ্রাসার নাম</span></div>
+</header>
+
+<main>
+<section id="dashboard" class="tab active">
+<div class="grid">
+<div class="card"><div class="muted">মোট শিক্ষার্থী</div><div class="stat" id="statStudents">০</div></div>
+<div class="card"><div class="muted">পাস</div><div class="stat" id="statPass">০</div></div>
+<div class="card"><div class="muted">ফেল</div><div class="stat" id="statFail">০</div></div>
+<div class="card"><div class="muted">সর্বোচ্চ মোট</div><div class="stat" id="statMax">০</div></div>
+</div>
+<div class="card">
+<h3>⚡ দ্রুত কাজ</h3>
+<div class="actions">
+<button class="btn primary" onclick="showTab('students')">+ শিক্ষার্থী যোগ</button>
+<button class="btn secondary" onclick="showTab('marks')">নম্বর দিন</button>
+<button class="btn dark" onclick="showTab('resultTab')">রেজাল্ট সিট দেখুন</button>
+</div>
+</div>
+<div class="card notice">এই সংস্করণে ডেটা আপনার ডিভাইসের ব্রাউজারে সংরক্ষণ হয়। নিয়মিত <b>ব্যাকআপ JSON</b> ডাউনলোড করে রাখুন।</div>
+</section>
+
+<section id="students" class="tab">
+<div class="card">
+<h3>শিক্ষার্থী যোগ / সম্পাদনা</h3>
+<div class="grid">
+<div><label>রোল</label><input id="sRoll" type="number"></div>
+<div><label>শিক্ষার্থী ID</label><input id="sId"></div>
+<div><label>শিক্ষার্থীর নাম</label><input id="sName"></div>
+<div><label>মারহালা</label><input id="sClass"></div>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="saveStudent()">সংরক্ষণ</button>
+<button class="btn secondary" onclick="clearStudentForm()">ফর্ম পরিষ্কার</button>
+</div>
+</div>
+<div class="card">
+<div class="grid3"><div><label>মারহালা অনুযায়ী তালিকা</label><select id="studentClassFilter" onchange="renderStudents()"><option value="all">সকল মারহালা</option></select></div><div style="grid-column:span 2"><label>নাম / ID / রোল দিয়ে খুঁজুন</label><input id="studentSearch" placeholder="খুঁজুন" oninput="renderStudents()"></div></div>
+<div class="table-wrap"><table><thead><tr><th>রোল</th><th>ID</th><th>নাম</th><th>মারহালা</th><th>মোট</th><th>ফলাফল</th><th>কাজ</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+</div>
+</section>
+
+<section id="marks" class="tab">
+<div class="card">
+<h3>নম্বর এন্ট্রি</h3>
+<div class="grid3">
+<div><label>শিক্ষার্থী</label><select id="markStudent" onchange="renderMarkForm()"></select></div>
+<div><label>পরীক্ষা</label><select id="examName"><option>১ম সাময়িক পরীক্ষা</option><option>২য় সাময়িক পরীক্ষা</option><option>মাসিক পরীক্ষা</option><option>সাপ্তাহিক পরীক্ষা</option><option>বার্ষিক পরীক্ষা</option></select></div>
+<div><label>সর্বোচ্চ নম্বর (প্রতি বিষয়)</label><input id="subjectMax" type="number" value="100"></div>
+</div>
+<div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>বিষয়</th><th>নম্বর</th></tr></thead><tbody id="marksBody"></tbody></table></div>
+<div class="actions"><button class="btn primary" onclick="saveMarks()">নম্বর সংরক্ষণ</button></div>
+</div>
+</section>
+
+<section id="resultTab" class="tab">
+<div id="resultControls" class="card">
+<div class="grid3">
+<div><label>ফলাফল শীটের শিরোনাম</label><input id="resultTitle" value="বার্ষিক ফলাফল শীট"></div>
+<div><label>মারহালা নির্বাচন</label><select id="resultClass" onchange="renderResult()"><option value="all">সকল মারহালা</option></select></div>
+<div><label>ফলাফল সিট</label><select id="resultFilter"><option value="all">সকল শিক্ষার্থী</option><option value="pass">শুধু পাস</option><option value="fail">শুধু ফেল</option></select></div>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="renderResult()">রেজাল্ট তৈরি/রিফ্রেশ</button>
+<button class="btn dark" onclick="printResult()">🖨️ Print / PDF</button>
+<button class="btn secondary" onclick="exportCSV()">CSV Export</button>
+<button class="btn secondary" onclick="downloadResultPortal()">একটি অনলাইন রেজাল্ট পোর্টাল তৈরি</button>
+</div>
+</div>
+<div id="resultArea"></div>
+</section>
+
+<section id="marksheetTab" class="tab">
+<div id="marksheetControls" class="card no-print">
+<div class="grid3">
+<div><label>মারহালা নির্বাচন</label><select id="marksheetClass" onchange="fillMarksheetSelect(true)"><option value="all">সকল মারহালা</option></select></div>
+<div><label>শিক্ষার্থী</label><select id="marksheetStudent" onchange="renderMarksheet()"></select></div>
+<div><label>পরীক্ষা</label><select id="marksheetExam"><option>১ম সাময়িক পরীক্ষা</option><option>২য় সাময়িক পরীক্ষা</option><option>মাসিক পরীক্ষা</option><option>সাপ্তাহিক পরীক্ষা</option><option>বার্ষিক পরীক্ষা</option></select></div>
+</div><div class="grid" style="margin-top:12px">
+<div><label>সর্বোচ্চ নম্বর (প্রতি বিষয়)</label><input id="marksheetMax" type="number" min="1" value="100" oninput="renderMarksheet()"></div>
+</div>
+<div class="actions"><button class="btn primary" onclick="renderMarksheet()">মার্কশিট তৈরি/রিফ্রেশ</button><button class="btn dark" onclick="printMarksheet()">🖨️ মার্কশিট Print / PDF</button><button class="btn secondary" onclick="printAllMarksheets()">সব মার্কশিট একসাথে Print / PDF</button></div>
+<p class="muted">একজন শিক্ষার্থী নির্বাচন করে তার বিষয়ভিত্তিক নম্বরের মার্কশিট প্রিন্ট করুন।</p>
+</div>
+<div id="marksheetArea"></div>
+</section>
+
+<section id="settings" class="tab">
+<div class="card">
+<h3>🏫 মাদ্রাসা সেটিংস</h3>
+<div class="grid">
+<div><label>মাদ্রাসার নাম</label><input id="setName"></div>
+<div><label>মাদ্রাসার নাম (English)</label><input id="setNameEn" placeholder="Madrasa Name"></div>
+<div><label>মাদ্রাসার নাম (العربية)</label><input id="setNameAr" dir="rtl" placeholder="اسم المدرسة"></div>
+<div><label>ঠিকানা</label><input id="setAddress" placeholder="গ্রাম, ডাকঘর, উপজেলা, জেলা"></div>
+<div><label>শাখা</label><input id="setBranch"></div>
+<div><label>সেশন</label><input id="setSession"></div>
+<div><label>বিভাগ</label><input id="setDept"></div>
+<div><label>মাদ্রাসার লোগো</label><input id="setLogoFile" type="file" accept="image/*" onchange="loadLogo(event)"><img id="setLogoPreview" class="logo-preview" alt="লোগো প্রিভিউ" style="display:none;margin-top:8px"><button class="btn secondary" type="button" onclick="removeLogo()">লোগো সরান</button></div>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="saveSettings()">সেটিংস সংরক্ষণ</button>
+</div>
+</div>
+<div class="card">
+<h3>📚 বিষয় তালিকা</h3>
+<p class="muted">কমা দিয়ে বিষয় লিখুন।</p>
+<input id="setSubjects">
+<div class="actions"><button class="btn primary" onclick="saveSubjects()">বিষয় সংরক্ষণ</button></div>
+</div>
+<div class="card">
+<h3>💾 ব্যাকআপ</h3>
+<div class="actions">
+<button class="btn secondary" onclick="backup()">JSON Backup</button>
+<label class="btn dark" style="display:inline-block">JSON Restore <input type="file" accept=".json" hidden onchange="restore(event)"></label>
+<button class="btn danger" onclick="resetAll()">সব ডেটা মুছুন</button>
+</div>
+</div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script src="./watermark-data.js"></script>
+<script>
+const BN="০১২৩৪৫৬৭৮৯";
+const defaultSubjects=["কোরান মাজিদ","আরবি","তাজবিদ","মাস‌আলা","দোয়া","হাদিস","মৌখিক","বাংলা","ইংরেজি","অংক"];
+let db=JSON.parse(localStorage.getItem("madrasaProDB")||"null")||{
+ settings:{name:"মাদ্রাসার নাম",nameEn:"",nameAr:"",address:"",branch:"শাখা: —",session:"সেশন: —",dept:"বিভাগ: —"},
+ subjects:defaultSubjects, students:[]
+};
+db.settings={name:"মাদ্রাসার নাম",nameEn:"",nameAr:"",address:"",branch:"শাখা: —",session:"সেশন: —",dept:"বিভাগ: —",...(db.settings||{})};
+function classNames(){return [...new Set(db.students.map(s=>(s.className||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"bn"))}
+function fillClassFilters(){let names=classNames();[["studentClassFilter","সকল মারহালা"],["resultClass","সকল মারহালা"],["marksheetClass","সকল মারহালা"]].forEach(([id,label])=>{let el=document.getElementById(id);if(!el)return;let old=el.value||"all";el.innerHTML=`<option value="all">${label}</option>`+names.map(c=>`<option value="${c.replaceAll('"','&quot;')}">${c}</option>`).join("");el.value=names.includes(old)?old:"all"})}
+function saveDB(){localStorage.setItem("madrasaProDB",JSON.stringify(db));updateStats()}
+function bn(n){return String(n).replace(/\d/g,d=>BN[d])}
+function toast(t){let x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800)}
+const calendarLocales={bn:"bn-BD",en:"en-GB",ar:"ar-SA-u-ca-islamic-umalqura"};
+let calendarLanguage="bn",calendarAnchor=new Date();
+
+const bnMonths=["বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ","পৌষ","মাঘ","ফাল্গুন","চৈত্র"];
+const bnWeekdays=["রবি","সোম","মঙ্গল","বুধ","বৃহস্পতি","শুক্র","শনি"];
+
+function safeDate(date,locale,options){try{return new Intl.DateTimeFormat(locale,options).format(date)}catch{return new Intl.DateTimeFormat("en-GB",options).format(date)}}
+
+function banglaCalendar(date=new Date()){
+  const g=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  let by=g.getFullYear()-593;
+  let start=new Date(g.getFullYear(),3,14);
+  if(g<start){by--;start=new Date(g.getFullYear()-1,3,14)}
+  const elapsed=Math.floor((g-start)/86400000);
+  const lens=[31,31,31,31,31,30,30,30,30,30,29,30];
+  const gy=start.getFullYear();
+  if(((gy%4===0)&&(gy%100!==0))||(gy%400===0)) lens[10]=30;
+  let n=elapsed,mi=0;
+  while(mi<11 && n>=lens[mi]){n-=lens[mi];mi++}
+  return {year:by,month:mi,day:n+1,name:bnMonths[mi]};
+}
+function banglaDateText(date=new Date()){
+  const b=banglaCalendar(date);
+  return `${bn(b.day)} ${b.name} ${bn(b.year)} বঙ্গাব্দ`;
+}
+function banglaMonthStart(year,month){
+  const gy=year+593;
+  let d=new Date(gy,3,14);
+  for(let i=0;i<month;i++){
+    let len=i<5?31:30;
+    if(i===10) len=(((gy%4===0)&&(gy%100!==0))||(gy%400===0))?30:29;
+    d.setDate(d.getDate()+len);
+  }
+  return d;
+}
+function hijriParts(date){
+  const p=new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",{timeZone:"Asia/Dhaka",year:"numeric",month:"numeric",day:"numeric"}).formatToParts(date);
+  const get=k=>Number((p.find(x=>x.type===k)||{}).value);
+  return {year:get("year"),month:get("month"),day:get("day")};
+}
+function hijriMonthName(date){
+  return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura",{timeZone:"Asia/Dhaka",month:"long"}).format(date);
+}
+function hijriMonthStart(date){
+  const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const p=hijriParts(d);
+  d.setDate(d.getDate()-p.day+1);
+  return d;
+}
+function hijriMonthLength(start){
+  const p=hijriParts(start);
+  const d=new Date(start);
+  for(let i=1;i<=30;i++){
+    d.setDate(d.getDate()+1);
+    const q=hijriParts(d);
+    if(q.month!==p.month || q.year!==p.year)return i;
+  }
+  return 30;
+}
+function bnMonthLength(b){
+  if(b.month<5)return 31;
+  if(b.month===10){
+    const gy=b.year+593;
+    return (((gy%4===0)&&(gy%100!==0))||(gy%400===0))?30:29;
+  }
+  return 30;
+}
+function renderBanglaCalendar(){
+  const b=banglaCalendar(calendarAnchor),start=banglaMonthStart(b.year,b.month),len=bnMonthLength(b);
+  return {
+    start,len,title:`${b.name} ${bn(b.year)} বঙ্গাব্দ`,dayLabels:bnWeekdays,
+    dayText:d=>bn(banglaCalendar(d).day),
+    today:d=>{const a=banglaCalendar(new Date()),x=banglaCalendar(d);return a.year===x.year&&a.month===x.month&&a.day===x.day}
+  };
+}
+function renderHijriCalendar(){
+  const start=hijriMonthStart(calendarAnchor),p=hijriParts(start),len=hijriMonthLength(start);
+  const labels=Array.from({length:7},(_,i)=>safeDate(new Date(2023,0,1+i),"ar-SA",{weekday:"short"}));
+  return {
+    start,len,title:`${hijriMonthName(start)} ${p.year} هـ`,dayLabels:labels,
+    dayText:d=>String(hijriParts(d).day),
+    today:d=>{const a=hijriParts(new Date()),x=hijriParts(d);return a.year===x.year&&a.month===x.month&&a.day===x.day}
+  };
+}
+function renderEnglishCalendar(){
+  const start=new Date(calendarAnchor.getFullYear(),calendarAnchor.getMonth(),1);
+  const len=new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
+  const labels=Array.from({length:7},(_,i)=>safeDate(new Date(2023,0,1+i),"en-GB",{weekday:"short"}));
+  return {
+    start,len,title:safeDate(start,"en-GB",{month:"long",year:"numeric"}),dayLabels:labels,
+    dayText:d=>String(d.getDate()),
+    today:d=>new Date().toDateString()===d.toDateString()
+  };
+}
+
+function updateDateWidget(){
+  const now=new Date(),tz={timeZone:"Asia/Dhaka"};
+  document.getElementById("liveTime").textContent="সময় / Time: "+safeDate(now,"en-GB",{...tz,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+  document.getElementById("dateBangla").textContent="বাংলা বঙ্গাব্দ: "+banglaDateText(now);
+  document.getElementById("dateArabic").textContent="الهجري: "+safeDate(now,"ar-SA-u-ca-islamic-umalqura",{...tz,day:"numeric",month:"long",year:"numeric"});
+  document.getElementById("dateEnglish").textContent="English: "+safeDate(now,"en-GB",{...tz,day:"numeric",month:"long",year:"numeric"});
+  updateSchoolTicker();
+}
+function updateSchoolTicker(){
+  let el=document.getElementById("schoolTickerName");if(!el)return;
+  let now=new Date(),tz={timeZone:"Asia/Dhaka"};
+  let text=`${db.settings.name||"মাদ্রাসার নাম"}　✦　বঙ্গাব্দ: ${banglaDateText(now)}　✦　হিজরি: ${safeDate(now,"ar-SA-u-ca-islamic-umalqura",{...tz,day:"numeric",month:"long",year:"numeric"})}　✦　English: ${safeDate(now,"en-GB",{...tz,day:"numeric",month:"long",year:"numeric"})}`;
+  if(el.dataset.tickerText===text)return;el.dataset.tickerText=text;el.textContent=text;
+}
+function toggleCalendar(){let panel=document.getElementById("calendarPanel");panel.hidden=!panel.hidden;if(!panel.hidden){calendarAnchor=new Date();renderCalendar()}}
+function setCalendarLanguage(lang){calendarLanguage=lang;calendarAnchor=new Date();renderCalendar()}
+function moveCalendar(delta){
+  if(calendarLanguage==="bn"){
+    const b=banglaCalendar(calendarAnchor);let m=b.month+delta,y=b.year;
+    if(m<0){m=11;y--} if(m>11){m=0;y++}
+    calendarAnchor=banglaMonthStart(y,m);
+  }else if(calendarLanguage==="ar"){
+    let d=hijriMonthStart(calendarAnchor);
+    if(delta>0){for(let i=0;i<delta;i++)d.setDate(d.getDate()+hijriMonthLength(d))}
+    else{for(let i=0;i<-delta;i++){d.setDate(d.getDate()-1);d=hijriMonthStart(d)}}
+    calendarAnchor=d;
+  }else{
+    calendarAnchor=new Date(calendarAnchor.getFullYear(),calendarAnchor.getMonth()+delta,1);
+  }
+  renderCalendar();
+}
+function renderCalendar(){
+  const panel=document.getElementById("calendarPanel");if(!panel)return;
+  panel.dir=calendarLanguage==="ar"?"rtl":"ltr";
+  document.querySelectorAll("[data-calendar-lang]").forEach(b=>b.classList.toggle("active",b.dataset.calendarLang===calendarLanguage));
+  const model=calendarLanguage==="bn"?renderBanglaCalendar():calendarLanguage==="ar"?renderHijriCalendar():renderEnglishCalendar();
+  document.getElementById("calendarTitle").textContent=model.title;
+  const firstDay=model.start.getDay();
+  let cells=model.dayLabels.map(d=>`<span class="weekday">${d}</span>`);
+  for(let i=0;i<firstDay;i++)cells.push('<span aria-hidden="true"></span>');
+  for(let i=0;i<model.len;i++){
+    const d=new Date(model.start);d.setDate(d.getDate()+i);
+    const isToday=model.today(d);
+    cells.push(`<span class="${isToday?"today":""}"${isToday?' aria-current="date"':''}>${model.dayText(d)}</span>`);
+  }
+  document.getElementById("calendarGrid").innerHTML=cells.join("");
+}
+function showTab(id,btn){
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");
+ if(btn){document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}
+ if(id==="students")renderStudents(); if(id==="marks"){fillStudentSelect();renderMarkForm()} if(id==="resultTab")renderResult(); if(id==="marksheetTab"){fillMarksheetSelect();renderMarksheet()} if(id==="settings")loadSettings();
+}
+function saveStudent(){
+let id=document.getElementById("sId").value.trim(), name=document.getElementById("sName").value.trim(), roll=document.getElementById("sRoll").value.trim();
+if(!name){toast("শিক্ষার্থীর নাম দিন");return}
+let old=db.students.find(s=>s.id===id && id); 
+if(old){old.name=name;old.roll=roll;old.className=document.getElementById("sClass").value.trim()}
+else db.students.push({id:id||String(Date.now()),roll,name,className:document.getElementById("sClass").value.trim(),marks:{}});
+saveDB();clearStudentForm();fillClassFilters();renderStudents();fillStudentSelect();toast("শিক্ষার্থী সংরক্ষণ হয়েছে")
+}
+function clearStudentForm(){["sRoll","sId","sName","sClass"].forEach(id=>document.getElementById(id).value="")}
+function renderStudents(){
+let q=(document.getElementById("studentSearch")?.value||"").toLowerCase(),cls=document.getElementById("studentClassFilter")?.value||"all";
+let rows=db.students.filter(s=>(cls==="all"||(s.className||"")===cls)&&(s.name+" "+s.id+" "+s.roll).toLowerCase().includes(q));
+document.getElementById("studentsBody").innerHTML=rows.map(s=>{
+let r=calc(s);return `<tr><td>${bn(s.roll||"")}</td><td>${s.id}</td><td>${s.name}</td><td>${s.className||""}</td><td>${bn(r.total)}</td><td>${r.result}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">এডিট</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">মুছুন</button></td></tr>`
+}).join("")||'<tr><td colspan="7">কোনো শিক্ষার্থী নেই</td></tr>';
+}
+function editStudent(id){let s=db.students.find(x=>x.id===id);if(!s)return;document.getElementById("sId").value=s.id;document.getElementById("sRoll").value=s.roll;document.getElementById("sName").value=s.name;document.getElementById("sClass").value=s.className||"";showTab("students")}
+function deleteStudent(id){if(confirm("এই শিক্ষার্থী মুছবেন?")){db.students=db.students.filter(s=>s.id!==id);saveDB();fillClassFilters();renderStudents();fillStudentSelect();toast("মুছে দেওয়া হয়েছে")}}
+function fillStudentSelect(){let el=document.getElementById("markStudent");el.innerHTML=db.students.map(s=>`<option value="${s.id}">${s.roll||""} — ${s.name}</option>`).join("");fillMarksheetSelect()}
+function fillMarksheetSelect(resetFirst=false){fillClassFilters();let el=document.getElementById("marksheetStudent");if(!el)return;let selected=el.value,cls=document.getElementById("marksheetClass")?.value||"all",visible=db.students.filter(s=>cls==="all"||(s.className||"")===cls);el.innerHTML=visible.map(s=>`<option value="${s.id}">${s.roll||""} — ${s.name}</option>`).join("");if(!resetFirst&&visible.some(s=>s.id===selected))el.value=selected;else if(visible.length)el.value=visible[0].id;renderMarksheet()}
+function renderMarkForm(){
+let s=db.students.find(x=>x.id===document.getElementById("markStudent").value);if(!s){document.getElementById("marksBody").innerHTML="";return}
+document.getElementById("marksBody").innerHTML=db.subjects.map((sub,i)=>`<tr><td>${sub}</td><td><input class="markInput" data-sub="${i}" type="number" min="0" max="${document.getElementById("subjectMax").value||100}" value="${s.marks[sub]??""}"></td></tr>`).join("")
+}
+function saveMarks(){
+let s=db.students.find(x=>x.id===document.getElementById("markStudent").value);if(!s)return;
+s.marks={};document.querySelectorAll(".markInput").forEach(x=>{let v=x.value.trim();s.marks[x.dataset.sub>=0?db.subjects[Number(x.dataset.sub)]:x.dataset.sub]=v===""?null:Number(v)});
+saveDB();renderStudents();renderResult();toast("নম্বর সংরক্ষণ হয়েছে")
+}
+function calc(s,maxOverride){
+let vals=db.subjects.map(x=>Number(s.marks?.[x]??0));let max=Number(maxOverride||document.getElementById("subjectMax")?.value||100);
+let total=vals.reduce((a,b)=>a+b,0), percent=db.subjects.length?total/(db.subjects.length*max)*100:0;
+let fail=vals.some(v=>v < max*0.33),division=fail?"রাসিব":gradeFor(total,db.subjects.length*max);
+return {vals,total,percent,division,result:fail?"ফেল":"পাস"}
+}
+function rankedStudents(classFilter="all"){
+let source=classFilter==="all"?db.students:db.students.filter(s=>(s.className||"")===classFilter);
+let arr=source.map(s=>({s,r:calc(s)})).sort((a,b)=>b.r.total-a.r.total || String(a.s.name).localeCompare(String(b.s.name),"bn"));
+let last=-1,rank=0;arr.forEach((x,i)=>{if(x.r.total!==last)rank=i+1;last=x.r.total;x.rank=rank});return arr
+}
+function renderResult(){
+fillClassFilters();let title=document.getElementById("resultTitle").value||"বার্ষিক ফলাফল শীট", filter=document.getElementById("resultFilter").value,cls=document.getElementById("resultClass").value;
+let arr=rankedStudents(cls);if(filter==="pass")arr=arr.filter(x=>x.r.result==="পাস");if(filter==="fail")arr=arr.filter(x=>x.r.result==="ফেল");
+let st=db.settings;
+document.getElementById("resultArea").innerHTML=`<div class="result-sheet watermarked">
+<div class="sheet-head">${st.logo?`<img class="brand-logo" src="${st.logo}" alt="মাদ্রাসার লোগো">`:""}<div class="small">${st.nameAr||""}</div><div class="small">${st.nameEn||""}</div><div class="small">${st.session||""}</div><h2>${st.name||"মাদ্রাসার নাম"}</h2><h3>${title}${cls!=="all"?` — ${cls}`:""}</h3><div>${st.address||""}</div><div>${st.branch||""} &nbsp;&nbsp;&nbsp; ${st.dept||""}</div></div>
+<div class="sheet-meta"><span>মোট শিক্ষার্থী: ${bn(arr.length)} জন</span><span>তারিখ: ${bn(new Date().toLocaleDateString("bn-BD"))}</span></div>
+<div class="table-wrap"><table class="sheet-table"><thead><tr><th>ক্রঃ</th><th>রোল</th><th>শিক্ষার্থীর নাম</th>${db.subjects.map(s=>`<th>${s}</th>`).join("")}<th>মোট</th><th>প্রাপ্ত বিভাগ</th><th>ফলাফল</th><th>মেধা স্থান</th></tr></thead>
+<tbody>${arr.map((x,i)=>`<tr><td>${bn(i+1)}</td><td>${bn(x.s.roll||"")}</td><td style="text-align:left;white-space:nowrap">${x.s.name}</td>${db.subjects.map((sub,j)=>{let entered=x.s.marks?.[sub]!=null,failed=x.r.vals[j]<Number(document.getElementById("subjectMax")?.value||100)*.33;return `<td class="${failed?"failed-mark":""}">${x.r.vals[j]===0&&!entered?"—":bn(x.r.vals[j])}</td>`}).join("")}<td><b>${bn(x.r.total)}</b></td><td>${x.r.division}</td><td>${x.r.result}</td><td>${bn(x.rank)}</td></tr>`).join("")}</tbody></table></div>
+<div class="right small" style="margin-top:7px">মোট পাস: ${bn(arr.filter(x=>x.r.result==="পাস").length)} জন &nbsp; মোট ফেল: ${bn(arr.filter(x=>x.r.result==="ফেল").length)} জন</div>
+</div>`;
+}
+function printResult(){document.body.classList.add("print-result");window.print();setTimeout(()=>document.body.classList.remove("print-result"),500)}
+function renderMarksheet(){
+let s=db.students.find(x=>x.id===document.getElementById("marksheetStudent")?.value);
+let area=document.getElementById("marksheetArea");if(!area)return;if(!s){area.innerHTML='<div class="card muted">মার্কশিট তৈরির জন্য আগে শিক্ষার্থী যোগ করুন।</div>';return}
+let max=Math.max(1,Number(document.getElementById("marksheetMax").value)||100),exam=document.getElementById("marksheetExam").value,r=calc(s,max),st=db.settings,rank=rankedStudents(s.className||"all").find(x=>x.s.id===s.id)?.rank||"—";
+area.innerHTML=markSheetHTML(s,max,exam,rank);
+}
+function markSheetHTML(s,max,exam,rank){let r=calc(s,max),st=db.settings;return `<article class="marksheet watermarked"><div class="marksheet-title">${st.logo?`<img class="brand-logo" src="${st.logo}" alt="মাদ্রাসার লোগো">`:""}${st.nameAr?`<div class="school-ar">${st.nameAr}</div>`:""}${st.name?`<h2>${st.name}</h2>`:""}${st.nameEn?`<div class="school-en">${st.nameEn}</div>`:""}${st.address?`<div class="school-address">${st.address}</div>`:""}<div class="small">${st.session||""} &nbsp; ${st.branch||""} &nbsp; ${st.dept||""}</div></div><div class="marksheet-exam">${exam} — ব্যক্তিগত মার্কশিট</div>
+<div class="student-meta"><div><b>শিক্ষার্থীর নাম:</b> ${s.name}</div><div><b>রোল:</b> ${bn(s.roll||"—")}</div><div><b>শিক্ষার্থী ID:</b> ${s.id||"—"}</div><div><b>মারহালা:</b> ${s.className||"—"}</div><div><b>মেধা স্থান:</b> ${bn(rank)}</div><div><b>তারিখ:</b> ${bn(new Date().toLocaleDateString("bn-BD"))}</div></div>
+<table class="marksheet-table"><thead><tr><th>ক্রমিক</th><th>বিষয়</th><th>পূর্ণমান</th><th>প্রাপ্ত নম্বর</th></tr></thead><tbody>${db.subjects.map((sub,i)=>{let v=r.vals[i],entered=s.marks?.[sub]!=null,failed=v<max*.33;return `<tr><td>${bn(i+1)}</td><td style="text-align:left">${sub}</td><td>${bn(max)}</td><td class="${failed?"failed-mark":""}">${entered?bn(v):"—"}</td></tr>`}).join("")}</tbody></table>
+<div class="marksheet-summary"><div class="summary-box">মোট নম্বর<br><b>${bn(r.total)} / ${bn(max*db.subjects.length)}</b></div><div class="summary-box">প্রাপ্ত বিভাগ<br><b>${r.division}</b></div><div class="summary-box">ফলাফল<br><b>${r.result}</b></div><div class="summary-box">মেধা স্থান<br><b>${bn(rank)}</b></div></div>
+<div class="signatures"><div>মুহতামিমের স্বাক্ষর</div></div></article>`;
+}
+function gradeFor(v,max){let p=max?v/max*100:0;return p>=80?"মুমতাজ":p>=65?"জায়্যিদ জিদ্দান":p>=50?"জায়্যিদ":p>=33?"মাকবুল":"রাসিব"}
+function printMarksheet(){document.body.classList.remove("print-result");renderMarksheet();window.print()}
+function printAllMarksheets(){let cls=document.getElementById("marksheetClass").value,ranked=rankedStudents(cls);if(!ranked.length){toast("এই মারহালায় কোনো শিক্ষার্থী নেই");return}let area=document.getElementById("marksheetArea"),max=Math.max(1,Number(document.getElementById("marksheetMax").value)||100),exam=document.getElementById("marksheetExam").value;area.innerHTML=ranked.map(x=>markSheetHTML(x.s,max,exam,x.rank)).join("");document.body.classList.add("print-all-marksheets");let restore=()=>{document.body.classList.remove("print-all-marksheets");renderMarksheet();window.removeEventListener("afterprint",restore)};window.addEventListener("afterprint",restore);window.print();setTimeout(()=>{if(document.body.classList.contains("print-all-marksheets"))restore()},60000)}
+function updateStats(){let a=rankedStudents();document.getElementById("statStudents").textContent=bn(db.students.length);document.getElementById("statPass").textContent=bn(a.filter(x=>x.r.result==="পাস").length);document.getElementById("statFail").textContent=bn(a.filter(x=>x.r.result==="ফেল").length);document.getElementById("statMax").textContent=bn(a[0]?.r.total||0)}
+function loadSettings(){let s=db.settings;document.getElementById("setName").value=s.name||"";document.getElementById("setNameEn").value=s.nameEn||"";document.getElementById("setNameAr").value=s.nameAr||"";document.getElementById("setAddress").value=s.address||"";document.getElementById("setBranch").value=s.branch||"";document.getElementById("setSession").value=s.session||"";document.getElementById("setDept").value=s.dept||"";document.getElementById("setSubjects").value=db.subjects.join(", ");previewLogo();updateSchoolTicker()}
+function saveSettings(){db.settings={...db.settings,name:document.getElementById("setName").value,nameEn:document.getElementById("setNameEn").value,nameAr:document.getElementById("setNameAr").value,address:document.getElementById("setAddress").value,branch:document.getElementById("setBranch").value,session:document.getElementById("setSession").value,dept:document.getElementById("setDept").value};saveDB();updateSchoolTicker();renderResult();renderMarksheet();toast("সেটিংস সংরক্ষণ হয়েছে")}
+function previewLogo(){let img=document.getElementById("setLogoPreview");if(!img)return;img.src=db.settings.logo||"";img.style.display=db.settings.logo?"block":"none"}
+function loadLogo(e){let file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){toast("ছবির ফাইল নির্বাচন করুন");return}let reader=new FileReader();reader.onload=()=>{db.settings.logo=reader.result;saveDB();previewLogo();renderResult();renderMarksheet();toast("লোগো সংরক্ষণ হয়েছে")};reader.readAsDataURL(file)}
+function removeLogo(){delete db.settings.logo;saveDB();previewLogo();renderResult();renderMarksheet();document.getElementById("setLogoFile").value="";toast("লোগো সরানো হয়েছে")}
+function saveSubjects(){let a=document.getElementById("setSubjects").value.split(",").map(x=>x.trim()).filter(Boolean);if(!a.length){toast("কমপক্ষে একটি বিষয় দিন");return}db.subjects=a;db.students.forEach(s=>{let m={};a.forEach(k=>m[k]=s.marks?.[k]??null);s.marks=m});saveDB();renderMarkForm();toast("বিষয় তালিকা আপডেট হয়েছে")}
+function backup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="madrasa-result-backup.json";a.click()}
+function restore(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);saveDB();location.reload()}catch{toast("ভুল JSON ফাইল")}};r.readAsText(f)}
+function exportCSV(){
+let cls=document.getElementById("resultClass").value,arr=rankedStudents(cls),head=["ক্রমিক","রোল","ID","শিক্ষার্থীর নাম",...db.subjects,"মোট","প্রাপ্ত বিভাগ","ফলাফল","মেধা স্থান"];
+let lines=[head,...arr.map((x,i)=>[i+1,x.s.roll,x.s.id,x.s.name,...x.r.vals,x.r.total,x.r.division,x.r.result,x.rank])].map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(","));
+let blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="madrasa-result.csv";a.click()
+}
+function downloadResultPortal(){
+if(!db.students.length){toast("আগে শিক্ষার্থী ও নম্বর যোগ করুন");return}
+let max=Math.max(1,Number(document.getElementById("marksheetMax")?.value)||100),exam=document.getElementById("marksheetExam")?.value||"বার্ষিক পরীক্ষা",ranked=rankedStudents();
+let records=ranked.map(x=>({id:String(x.s.id||""),roll:String(x.s.roll||"")})),sheets=ranked.map((x,i)=>`<div class="student-result" data-index="${i}">${markSheetHTML(x.s,max,exam,x.rank)}</div>`).join("");
+let safeRecords=JSON.stringify(records).replace(/</g,"\\u003c"),styles=document.querySelector("style").textContent.replace(/url\(["']?\.\/mandala-watermark\.png["']?\)/g,'url("'+WATERMARK_DATA_URL+'")');
+let html=`<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${db.settings.name||"অনলাইন রেজাল্ট"}</title><style>${styles}
+body{padding:20px}.portal-card{max-width:600px;margin:8vh auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 12px #0002}.portal-card h1{text-align:center;color:#115e59}.portal-card label{display:block;margin:12px 0 5px}.portal-card input{width:100%;padding:12px;border:1px solid #aab8b5;border-radius:7px;font:inherit}.portal-card button{margin-top:16px;padding:11px 18px;background:#0f766e;color:#fff;border:0;border-radius:7px;font:inherit;cursor:pointer}.student-result{display:none}.student-result.selected{display:block}.portal-tools{text-align:center;margin:15px}.portal-tools button{margin:5px;padding:10px 16px}.portal-error{color:#b42318;margin-top:12px}
+@media print{body{padding:0}.portal-card,.portal-tools{display:none!important}.student-result{display:none!important}.student-result.selected{display:block!important}#marksheetTab .marksheet{border:0;margin:0;padding:8mm;max-width:none;min-height:0}}
+</style></head><body><section id="marksheetTab"><div id="portalLogin" class="portal-card"><h1>${db.settings.name||"অনলাইন রেজাল্ট"}</h1><p>নিজের মার্কশিট দেখতে রোল ও শিক্ষার্থী ID লিখুন।</p><form id="portalForm"><label for="portalRoll">রোল</label><input id="portalRoll" required><label for="portalId">শিক্ষার্থী ID</label><input id="portalId" required><button type="submit">মার্কশিট দেখুন</button><div id="portalError" class="portal-error"></div></form></div><div id="portalTools" class="portal-tools" hidden><button onclick="window.print()">মার্কশিট ডাউনলোড / Print</button><button onclick="backToLogin()">অন্য শিক্ষার্থী</button></div><div id="portalResults">${sheets}</div></section><script>
+const portalRecords=${safeRecords};document.getElementById('portalForm').addEventListener('submit',function(e){e.preventDefault();let roll=document.getElementById('portalRoll').value.trim(),id=document.getElementById('portalId').value.trim(),i=portalRecords.findIndex(x=>x.roll===roll&&x.id===id);if(i<0){document.getElementById('portalError').textContent='রোল অথবা ID মেলেনি। আবার চেষ্টা করুন।';return}document.querySelectorAll('.student-result').forEach((el,n)=>el.classList.toggle('selected',n===i));document.getElementById('portalLogin').hidden=true;document.getElementById('portalTools').hidden=false});function backToLogin(){document.querySelectorAll('.student-result').forEach(el=>el.classList.remove('selected'));document.getElementById('portalLogin').hidden=false;document.getElementById('portalTools').hidden=true;document.getElementById('portalError').textContent=''}
+</scr${"ipt"}></body></html>`;
+let blob=new Blob([html],{type:"text/html;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="madrasa-online-result-portal.html";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("পোর্টাল ফাইল ডাউনলোড হয়েছে; অনলাইনে প্রকাশ করুন")
+}
+function resetAll(){if(confirm("সব শিক্ষার্থী, নম্বর ও সেটিংস মুছে যাবে। নিশ্চিত?")){localStorage.removeItem("madrasaProDB");location.reload()}}
+updateDateWidget();setInterval(updateDateWidget,1000);renderCalendar();loadSettings();fillClassFilters();fillStudentSelect();renderStudents();renderMarkForm();updateStats();renderResult();renderMarksheet();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
